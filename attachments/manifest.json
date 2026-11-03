@@ -1,0 +1,550 @@
+{
+  "generatedAt": "2026-11-03T15:35:46.092Z",
+  "totalBytes": 412532142,
+  "years": {
+    "2010": [
+      {
+        "name": "2010_text1_复盘模式.html",
+        "size": 6441189
+      },
+      {
+        "name": "2010_text1_做题模式.html",
+        "size": 870457
+      },
+      {
+        "name": "2010_text2_做题模式.html",
+        "size": 1375153
+      },
+      {
+        "name": "2010_text2_复盘模式.html",
+        "size": 4480268
+      },
+      {
+        "name": "2010_text3_做题模式.html",
+        "size": 1766466
+      },
+      {
+        "name": "2010_text4_做题模式.html",
+        "size": 1369500
+      },
+      {
+        "name": "2010_text3_复盘模式.html",
+        "size": 4923355
+      },
+      {
+        "name": "2010_text4_复盘模式.html",
+        "size": 4639561
+      }
+    ],
+    "2011": [
+      {
+        "name": "2011_text1_做题模式.html",
+        "size": 1245757
+      },
+      {
+        "name": "2011_text1_复盘模式.html",
+        "size": 4783466
+      },
+      {
+        "name": "2011_text2_做题模式.html",
+        "size": 1278063
+      },
+      {
+        "name": "2011_text2_复盘模式.html",
+        "size": 4823134
+      },
+      {
+        "name": "2011_text3_做题模式.html",
+        "size": 1379116
+      },
+      {
+        "name": "2011_text3_复盘模式.html",
+        "size": 5084546
+      },
+      {
+        "name": "2011_text4_做题模式.html",
+        "size": 1725731
+      },
+      {
+        "name": "2011_text4_复盘模式.html",
+        "size": 4857010
+      }
+    ],
+    "2012": [
+      {
+        "name": "2012_text1_做题模式.html",
+        "size": 1654718
+      },
+      {
+        "name": "2012_text1_复盘模式.html",
+        "size": 4525698
+      },
+      {
+        "name": "2012_text2_做题模式.html",
+        "size": 1673728
+      },
+      {
+        "name": "2012_text2_复盘模式.html",
+        "size": 4536358
+      },
+      {
+        "name": "2012_text3_做题模式.html",
+        "size": 1561659
+      },
+      {
+        "name": "2012_text4_做题模式.html",
+        "size": 1657573
+      },
+      {
+        "name": "2012_text4_复盘模式.html",
+        "size": 4528015
+      },
+      {
+        "name": "2012_text3_复盘模式.html",
+        "size": 5097078
+      }
+    ],
+    "2013": [
+      {
+        "name": "2013_text1_做题模式.html",
+        "size": 1364926
+      },
+      {
+        "name": "2013_text1_复盘模式.html",
+        "size": 4954277
+      },
+      {
+        "name": "2013_text2_做题模式.html",
+        "size": 1344062
+      },
+      {
+        "name": "2013_text2_复盘模式.html",
+        "size": 4787974
+      },
+      {
+        "name": "2013_text3_做题模式.html",
+        "size": 1340421
+      },
+      {
+        "name": "2013_text3_复盘模式.html",
+        "size": 4803834
+      },
+      {
+        "name": "2013_text4_复盘模式.html",
+        "size": 4624882
+      },
+      {
+        "name": "2013_text4_做题模式.html",
+        "size": 1755680
+      }
+    ],
+    "2014": [
+      {
+        "name": "2014_text1_做题模式.html",
+        "size": 1408087
+      },
+      {
+        "name": "2014_text1_复盘模式.html",
+        "size": 4890671
+      },
+      {
+        "name": "2014_text2_做题模式.html",
+        "size": 1403710
+      },
+      {
+        "name": "2014_text2_复盘模式.html",
+        "size": 5015321
+      },
+      {
+        "name": "2014_text3_做题模式.html",
+        "size": 1365438
+      },
+      {
+        "name": "2014_text3_复盘模式.html",
+        "size": 4794516
+      },
+      {
+        "name": "2014_text4_复盘模式.html",
+        "size": 4947793
+      },
+      {
+        "name": "2014_text4_做题模式.html",
+        "size": 1486206
+      }
+    ],
+    "2015": [
+      {
+        "name": "2015_text1_做题模式.html",
+        "size": 1186795
+      },
+      {
+        "name": "2015_text2_做题模式.html",
+        "size": 1770404
+      },
+      {
+        "name": "2015_text2_复盘模式.html",
+        "size": 4615825
+      },
+      {
+        "name": "2015_text1_复盘模式.html",
+        "size": 4745676
+      },
+      {
+        "name": "2015_text3_复盘模式.html",
+        "size": 4822333
+      },
+      {
+        "name": "2015_text3_做题模式.html",
+        "size": 1157307
+      },
+      {
+        "name": "2015_text4_做题模式.html",
+        "size": 1719390
+      },
+      {
+        "name": "2015_text4_复盘模式.html",
+        "size": 4544418
+      }
+    ],
+    "2016": [
+      {
+        "name": "2016_text1_做题模式.html",
+        "size": 1027332
+      },
+      {
+        "name": "2016_text1_复盘模式.html",
+        "size": 4817195
+      },
+      {
+        "name": "2016_text2_做题模式.html",
+        "size": 1704401
+      },
+      {
+        "name": "2016_text3_复盘模式.html",
+        "size": 4460580
+      },
+      {
+        "name": "2016_text2_复盘模式.html",
+        "size": 4612836
+      },
+      {
+        "name": "2016_text3_做题模式.html",
+        "size": 1649533
+      },
+      {
+        "name": "2016_text4_复盘模式.html",
+        "size": 4806016
+      },
+      {
+        "name": "2016_text4_做题模式.html",
+        "size": 1005405
+      }
+    ],
+    "2017": [
+      {
+        "name": "2017_text1_做题模式.html",
+        "size": 1197882
+      },
+      {
+        "name": "2017_text2_做题模式.html",
+        "size": 1207270
+      },
+      {
+        "name": "2017_text2_复盘模式.html",
+        "size": 4831123
+      },
+      {
+        "name": "2017_text1_复盘模式.html",
+        "size": 4810500
+      },
+      {
+        "name": "2017_text3_复盘模式.html",
+        "size": 4825663
+      },
+      {
+        "name": "2017_text3_做题模式.html",
+        "size": 1206594
+      },
+      {
+        "name": "2017_text4_做题模式.html",
+        "size": 1190097
+      },
+      {
+        "name": "2017_text4_复盘模式.html",
+        "size": 4843515
+      }
+    ],
+    "2018": [
+      {
+        "name": "2018_text1_做题模式.html",
+        "size": 1659056
+      },
+      {
+        "name": "2018_text2_做题模式.html",
+        "size": 1883834
+      },
+      {
+        "name": "2018_text1_复盘模式.html",
+        "size": 4551151
+      },
+      {
+        "name": "2018_text2_复盘模式.html",
+        "size": 4836886
+      },
+      {
+        "name": "2018_text3_做题模式.html",
+        "size": 1826125
+      },
+      {
+        "name": "2018_text3_复盘模式.html",
+        "size": 4781817
+      },
+      {
+        "name": "2018_text4_复盘模式.html",
+        "size": 4845887
+      },
+      {
+        "name": "2018_text4_做题模式.html",
+        "size": 1899870
+      }
+    ],
+    "2019": [
+      {
+        "name": "2019_text1_做题模式.html",
+        "size": 1685558
+      },
+      {
+        "name": "2019_text1_复盘模式.html",
+        "size": 4847188
+      },
+      {
+        "name": "2019_text2_做题模式.html",
+        "size": 1652775
+      },
+      {
+        "name": "2019_text3_做题模式.html",
+        "size": 1782707
+      },
+      {
+        "name": "2019_text2_复盘模式.html",
+        "size": 4796205
+      },
+      {
+        "name": "2019_text3_复盘模式.html",
+        "size": 4918223
+      },
+      {
+        "name": "2019_text4_做题模式.html",
+        "size": 1727464
+      },
+      {
+        "name": "2019_text4_复盘模式.html",
+        "size": 4960301
+      }
+    ],
+    "2020": [
+      {
+        "name": "2020_text1_做题模式.html",
+        "size": 1521245
+      },
+      {
+        "name": "2020_text1_复盘模式.html",
+        "size": 4394859
+      },
+      {
+        "name": "2020_text2_做题模式.html",
+        "size": 1640772
+      },
+      {
+        "name": "2020_text3_做题模式.html",
+        "size": 1745402
+      },
+      {
+        "name": "2020_text2_复盘模式.html",
+        "size": 4564374
+      },
+      {
+        "name": "2020_text3_复盘模式.html",
+        "size": 4648232
+      },
+      {
+        "name": "2020_text4_复盘模式.html",
+        "size": 4904212
+      },
+      {
+        "name": "2020_text4_做题模式.html",
+        "size": 2053575
+      }
+    ],
+    "2021": [
+      {
+        "name": "2021_text1_做题模式.html",
+        "size": 1745958
+      },
+      {
+        "name": "2021_text1_复盘模式.html",
+        "size": 4681447
+      },
+      {
+        "name": "2021_text2_做题模式.html",
+        "size": 2019392
+      },
+      {
+        "name": "2021_text2_复盘模式.html",
+        "size": 4906628
+      },
+      {
+        "name": "2021_text3_做题模式.html",
+        "size": 2085512
+      },
+      {
+        "name": "2021_text3_复盘模式.html",
+        "size": 5007152
+      },
+      {
+        "name": "2021_text4_做题模式.html",
+        "size": 1683763
+      },
+      {
+        "name": "2021_text4_复盘模式.html",
+        "size": 4543155
+      }
+    ],
+    "2022": [
+      {
+        "name": "2022_text1_做题模式.html",
+        "size": 1626451
+      },
+      {
+        "name": "2022_text1_复盘模式.html",
+        "size": 4539809
+      },
+      {
+        "name": "2022_text2_做题模式.html",
+        "size": 1555909
+      },
+      {
+        "name": "2022_text2_复盘模式.html",
+        "size": 4501448
+      },
+      {
+        "name": "2022_text3_做题模式.html",
+        "size": 1695158
+      },
+      {
+        "name": "2022_text3_复盘模式.html",
+        "size": 4605085
+      },
+      {
+        "name": "2022_text4_做题模式.html",
+        "size": 1724446
+      },
+      {
+        "name": "2022_text4_复盘模式.html",
+        "size": 4608567
+      }
+    ],
+    "2023": [
+      {
+        "name": "2023_text1_做题模式.html",
+        "size": 1631676
+      },
+      {
+        "name": "2023_text1_复盘模式.html",
+        "size": 4527824
+      },
+      {
+        "name": "2023_text2_做题模式.html",
+        "size": 1584030
+      },
+      {
+        "name": "2023_text2_复盘模式.html",
+        "size": 4526722
+      },
+      {
+        "name": "2023_text3_做题模式.html",
+        "size": 1627013
+      },
+      {
+        "name": "2023_text3_复盘模式.html",
+        "size": 4561158
+      },
+      {
+        "name": "2023_text4_做题模式.html",
+        "size": 1608150
+      },
+      {
+        "name": "2023_text4_复盘模式.html",
+        "size": 4570360
+      }
+    ],
+    "2024": [
+      {
+        "name": "2024_text1_复盘模式.html",
+        "size": 4561288
+      },
+      {
+        "name": "2024_text1_做题模式.html",
+        "size": 1636130
+      },
+      {
+        "name": "2024_text2_做题模式.html",
+        "size": 2108882
+      },
+      {
+        "name": "2024_text2_复盘模式.html",
+        "size": 5026017
+      },
+      {
+        "name": "2024_text3_做题模式.html",
+        "size": 2126302
+      },
+      {
+        "name": "2024_text3_复盘模式.html",
+        "size": 4916904
+      },
+      {
+        "name": "2024_text4_做题模式.html",
+        "size": 1630038
+      },
+      {
+        "name": "2024_text4_复盘模式.html",
+        "size": 4584191
+      }
+    ],
+    "2025": [
+      {
+        "name": "2025_text1_做题模式.html",
+        "size": 1926419
+      },
+      {
+        "name": "2025_text1_复盘模式.html",
+        "size": 4615199
+      },
+      {
+        "name": "2025_text2_做题模式.html",
+        "size": 2968488
+      },
+      {
+        "name": "2025_text3_做题模式.html",
+        "size": 2189223
+      },
+      {
+        "name": "2025_text2_复盘模式.html",
+        "size": 8333353
+      },
+      {
+        "name": "2025_text3_复盘模式.html",
+        "size": 4887220
+      },
+      {
+        "name": "2025_text4_做题模式.html",
+        "size": 2400166
+      },
+      {
+        "name": "2025_text4_复盘模式.html",
+        "size": 5004304
+      }
+    ]
+  }
+}
