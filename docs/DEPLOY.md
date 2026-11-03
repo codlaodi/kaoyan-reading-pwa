@@ -8,11 +8,12 @@
 | 仓库 | <https://github.com/codlaodi/kaoyan-reading-pwa> |
 | Pages 源 | `gh-pages` 分支（已构建产物） |
 | base | `/kaoyan-reading-pwa/` |
+| 站点体积 | 约 **396 MB**（其中 128 个附件 393.4 MB） |
 
 本机没有 git，实际使用 `scripts/gh-deploy.mjs` 直连 GitHub REST API 完成：
 
 ```bash
-# 重新构建（base 必须等于 /<仓库名>/）
+# 重新构建（base 必须等于 /<仓库名>/；会复制 393 MB 附件）
 BASE_PATH=/kaoyan-reading-pwa/ pnpm build
 
 # 上传 main（源码）+ gh-pages（构建产物），并开启/更新 Pages
@@ -22,12 +23,18 @@ GH_TOKEN=<具备 repo 权限的 token> node scripts/gh-deploy.mjs
 GH_MAIN_ONLY=1 GH_TOKEN=<token> node scripts/gh-deploy.mjs
 ```
 
+- 首次上传 400 MB 约需十几分钟；脚本会先 `HEAD` 检查 blob 是否已存在，重试时只补缺失文件。
+- GitHub 的 tree API 单次请求过大会超时，脚本按 40 个文件分块建树（`GH_TREE_CHUNK` 可调）。
+- `raw/attachments/` 与 `dist/` 都在 `.gitignore`，源码仓库只保留脚本与文档；附件只存在于 gh-pages 产物。
 - `GH_TOKEN` 可用 `gh auth token` 获取；不要提交到仓库。
 - 若你的网络也有 TLS 代理，Node 可能报 `UNABLE_TO_VERIFY_LEAF_SIGNATURE`：用
   `NODE_EXTRA_CA_CERTS=<导出的根证书.pem> node scripts/gh-deploy.mjs`，不要关闭校验。
 - 当前授权 token 的 scopes 为 `gist, read:org, repo`，**不含 workflow**，因此没有上传
   `.github/workflows/deploy.yml`，Pages 走 `gh-pages` 分支。需要 Actions 时，给 token 加
   `workflow` 权限后重新上传该目录，并在 Pages 设置里把 Source 切到 **GitHub Actions**。
+
+> Pages 构建 400 MB 分支会比普通站点慢，`status` 可能持续 `building` 十几分钟；期间访问到的是旧版本，属正常。
+> Vercel 免费额度对 396 MB 部署可能超限，优先 GitHub Pages。
 
 ---
 

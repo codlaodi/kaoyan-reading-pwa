@@ -173,7 +173,7 @@ GH_MAIN_ONLY=1 GH_TOKEN=ghp_xxx node scripts/gh-deploy.mjs
 
 - **本地根路径**：24/24（`artifacts/verify-offline-local.json`）。
 - **子路径构建**：`BASE_PATH=/kaoyan-reading-pwa/` 下 24/24（`artifacts/verify-offline-base.json`）。
-- **线上复测**：部署完成后对 <https://codlaodi.github.io/kaoyan-reading-pwa/> 跑同一套脚本（见 `artifacts/verify-offline-live.json`）。
+- **线上复测**：直接对 <https://codlaodi.github.io/kaoyan-reading-pwa/> 跑同一套脚本，**24/24**（`artifacts/verify-offline-live.json`）。
 - 验收方法：`pnpm build` 后 `pnpm verify`；脚本会**先停掉本地服务器**再断网，避免“其实还在访问 localhost”的假通过。
 - 安卓手动清单见 [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md)。
 

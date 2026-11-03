@@ -1,122 +1,152 @@
 {
-  "verifiedAt": "2026-11-03T15:13:35.945Z",
+  "verifiedAt": "2026-11-03T15:46:10.948Z",
   "baseUrl": "https://codlaodi.github.io/kaoyan-reading-pwa/",
-  "passed": 19,
+  "passed": 24,
   "failed": 0,
   "checks": [
     {
       "name": "PWA manifest 可解析",
       "ok": true,
       "detail": "url=https://codlaodi.github.io/kaoyan-reading-pwa/manifest.webmanifest",
-      "at": "2026-11-03T15:12:26.810Z"
+      "at": "2026-11-03T15:44:44.204Z"
     },
     {
       "name": "Service Worker 激活",
       "ok": true,
       "detail": "state=activated",
-      "at": "2026-11-03T15:13:30.975Z"
+      "at": "2026-11-03T15:45:51.624Z"
     },
     {
       "name": "Service Worker 接管当前页面",
       "ok": true,
       "detail": "",
-      "at": "2026-11-03T15:13:30.975Z"
+      "at": "2026-11-03T15:45:51.624Z"
     },
     {
       "name": "Chrome 可安装性检查",
       "ok": true,
       "detail": "无错误",
-      "at": "2026-11-03T15:13:30.992Z"
+      "at": "2026-11-03T15:45:51.628Z"
     },
     {
       "name": "预缓存已写入 Cache Storage",
       "ok": true,
-      "detail": "缓存 131 个请求",
-      "at": "2026-11-03T15:13:31.013Z"
+      "detail": "缓存 136 个请求",
+      "at": "2026-11-03T15:45:51.649Z"
     },
     {
       "name": "首页渲染",
       "ok": true,
       "detail": "",
-      "at": "2026-11-03T15:13:31.015Z"
+      "at": "2026-11-03T15:45:51.650Z"
     },
     {
       "name": "移动端底部工具条存在",
       "ok": true,
       "detail": "",
-      "at": "2026-11-03T15:13:31.015Z"
+      "at": "2026-11-03T15:45:51.651Z"
+    },
+    {
+      "name": "站内打开附件（免登录）",
+      "ok": true,
+      "detail": "title=2010 Text 1 · 做题模式 text=92",
+      "at": "2026-11-03T15:46:05.097Z"
+    },
+    {
+      "name": "附件写入离线缓存",
+      "ok": true,
+      "detail": "缓存 1 份",
+      "at": "2026-11-03T15:46:05.099Z"
     },
     {
       "name": "浏览器进入离线状态",
       "ok": true,
       "detail": "navigator.onLine=false",
-      "at": "2026-11-03T15:13:31.150Z"
+      "at": "2026-11-03T15:46:05.101Z"
     },
     {
       "name": "断网打开年份页 /english-1/2010.html",
       "ok": true,
       "detail": "title=2010 年 · 英语一 · 考研阅读大观",
-      "at": "2026-11-03T15:13:31.532Z"
+      "at": "2026-11-03T15:46:05.498Z"
     },
     {
-      "name": "附件链接保留原始来源",
+      "name": "附件链接指向站内阅读器",
       "ok": true,
-      "detail": "https://www.yuque.com/attachments/yuque/0/2026/html/60574212/1792505014701-cc154",
-      "at": "2026-11-03T15:13:31.534Z"
+      "detail": "https://codlaodi.github.io/kaoyan-reading-pwa/reader.html?year=2010&f=%2Fattachments%2F2010%2F2010_t",
+      "at": "2026-11-03T15:46:05.499Z"
+    },
+    {
+      "name": "来源标注保留语雀原链",
+      "ok": true,
+      "detail": "https://www.yuque.com/nanxiao_fighters/afkiny/zqltd3vcs9xowp13",
+      "at": "2026-11-03T15:46:05.500Z"
+    },
+    {
+      "name": "年份页提供整年离线缓存",
+      "ok": true,
+      "detail": "离线保存\n本年 8 份资料，共 24.7 MB；已缓存 1/8\n缓存本年资料",
+      "at": "2026-11-03T15:46:06.111Z"
     },
     {
       "name": "字号调节 A+ 生效",
       "ok": true,
       "detail": "16px → 17.6px",
-      "at": "2026-11-03T15:13:31.840Z"
+      "at": "2026-11-03T15:46:06.420Z"
     },
     {
       "name": "深色模式可切换",
       "ok": true,
       "detail": "false → true",
-      "at": "2026-11-03T15:13:32.356Z"
+      "at": "2026-11-03T15:46:06.960Z"
     },
     {
       "name": "阅读进度写入 localStorage",
       "ok": true,
       "detail": "条目=1",
-      "at": "2026-11-03T15:13:33.773Z"
+      "at": "2026-11-03T15:46:08.384Z"
+    },
+    {
+      "name": "断网重开附件（缓存命中）",
+      "ok": true,
+      "detail": "text=92 cachedBadge=true",
+      "at": "2026-11-03T15:46:08.728Z"
     },
     {
       "name": "断网打开附件清单",
       "ok": true,
       "detail": "表格行数=131",
-      "at": "2026-11-03T15:13:34.104Z"
+      "at": "2026-11-03T15:46:09.072Z"
     },
     {
       "name": "断网 Pagefind 中文搜索「复盘」",
       "ok": true,
-      "detail": "命中 21 条：附件清单与登录限制 ​ / 2011 年 · 英语一 · 考研阅读大观 / 2012 年 · 英语一 · 考研阅读大观",
-      "at": "2026-11-03T15:13:34.543Z"
+      "detail": "命中 21 条：2011 年 · 英语一 · 考研阅读大观 / 2012 年 · 英语一 · 考研阅读大观 / 2013 年 · 英语一 · 考研阅读大观",
+      "at": "2026-11-03T15:46:09.515Z"
     },
     {
       "name": "断网 Pagefind 数字搜索「2010」",
       "ok": true,
       "detail": "命中 6 条",
-      "at": "2026-11-03T15:13:34.543Z"
+      "at": "2026-11-03T15:46:09.515Z"
     },
     {
       "name": "搜索弹窗可打开（Ctrl+K）",
       "ok": true,
       "detail": "",
-      "at": "2026-11-03T15:13:34.956Z"
+      "at": "2026-11-03T15:46:09.935Z"
     },
     {
       "name": "首页显示「继续上次阅读」",
       "ok": true,
-      "detail": "继续上次阅读 刚刚 2010 年 · 英语一 已读 98% 继续阅读 →",
-      "at": "2026-11-03T15:13:35.462Z"
+      "detail": "继续上次阅读 刚刚 2010 年 · 英语一 已读 93% 继续阅读 →",
+      "at": "2026-11-03T15:46:10.453Z"
     },
     {
       "name": "未缓存页面回退到离线页",
       "ok": true,
-      "detail": "url=https://codlaodi.github.io/kaoyan-reading-pwa/not-cached-1793718815462 title=离线 · 考研阅读大观 controlled=true text=\"这个页面还没有缓存\\n\\n当前处于离线状态，该页面不在离线缓存中。\\n回到已缓存的目录页即可继续阅读。\\n\\n回到首页\\n英语一目录\\n联网后打开本页一次，下次即可离线访问。\" caches=workbox-precache-v2-https://codlaodi.github.io/kaoyan-reading-pwa/",
-      "at": "2026-11-03T15:13:35.489Z"
+      "detail": "url=https://codlaodi.github.io/kaoyan-reading-pwa/not-cached-1793720770453 title=离线 · 考研阅读大观 controlled=true text=\"这个页面还没有缓存\\n\\n当前处于离线状态，该页面不在离线缓存中。\\n回到已缓存的目录页即可继续阅读。\\n\\n回到首页\\n英语一目录\\n联网后打开本页一次，下次即可离线访问。\" caches=workbox-precache-v2-https://codlaodi.github.io/kaoyan-reading-pwa/,kaoyan-local-attachments",
+      "at": "2026-11-03T15:46:10.477Z"
     }
   ]
 }
