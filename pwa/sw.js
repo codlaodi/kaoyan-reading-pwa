@@ -100,14 +100,18 @@ function candidatesFor(url) {
 }
 
 registerRoute(
-  new NavigationRoute(async ({ request }) => {
-    const url = new URL(request.url)
-    for (const candidate of candidatesFor(url)) {
-      const hit = await matchPrecache(candidate)
-      if (hit) return hit
-    }
-    return offlineResponse()
-  })
+  new NavigationRoute(
+    async ({ request }) => {
+      const url = new URL(request.url)
+      for (const candidate of candidatesFor(url)) {
+        const hit = await matchPrecache(candidate)
+        if (hit) return hit
+      }
+      return offlineResponse()
+    },
+    // 附件（含 iframe 导航）不交给页面导航回退，交给下面的 CacheFirst
+    { denylist: [/\/attachments\//] }
+  )
 )
 
 /** 可选的本地附件镜像：/attachments/ 下看过的文件缓存一年 */
@@ -120,7 +124,7 @@ registerRoute(
     cacheName: 'kaoyan-local-attachments',
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 80,
+        maxEntries: 200,
         maxAgeSeconds: 60 * 60 * 24 * 365,
         purgeOnQuotaError: true,
       }),

@@ -37,6 +37,7 @@ export default defineConfig({
     ['link', { rel: 'manifest', href: `${base}manifest.webmanifest` }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}favicon.svg` }],
     ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: `${base}icons/apple-touch-icon.png` }],
+    ['meta', { name: 'robots', content: 'noindex, nofollow' }],
     ['meta', { name: 'theme-color', content: '#f7f8fa', media: '(prefers-color-scheme: light)' }],
     ['meta', { name: 'theme-color', content: '#0b1220', media: '(prefers-color-scheme: dark)' }],
     ['meta', { name: 'mobile-web-app-capable', content: 'yes' }],

@@ -6,6 +6,9 @@ node_modules/
 # 本地抓取工具（yuque-dl 安装目录，约 100MB，不随仓库分发）
 _tools/
 
+# 语雀附件原件（393MB；需本人在语雀登录后下载，不随源码仓库分发）
+raw/attachments/
+
 # 系统与日志
 .DS_Store
 Thumbs.db

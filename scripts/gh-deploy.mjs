@@ -45,6 +45,7 @@ const EXCLUDE_DIRS = new Set([
   'cache',
   '.vitepress/cache',
   '.vitepress/dist',
+  'raw/attachments',
 ])
 
 function headers(extra = {}) {
@@ -227,7 +228,7 @@ async function enablePages() {
 async function waitPages() {
   log('\n▶ 等待 Pages 构建')
   let url = ''
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 450; i++) {
     const { data } = await raw(`/repos/${OWNER}/${REPO}/pages`)
     url = data.html_url || url
     const status = data.status || '(unknown)'

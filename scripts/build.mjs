@@ -50,14 +50,14 @@ async function main() {
   const started = Date.now()
   console.log(`构建 base = ${base}`)
 
-  run('1/5 生成内容（raw → content）', ['scripts/build-content.mjs'])
-  run('2/5 构建 VitePress 静态站', ['node_modules/vitepress/bin/vitepress.js', 'build', '.'])
+  run('1/6 生成内容（raw → content）', ['scripts/build-content.mjs'])
+  run('2/6 构建 VitePress 静态站', ['node_modules/vitepress/bin/vitepress.js', 'build', '.'])
 
   if (!fs.existsSync(path.join(DIST, 'index.html'))) {
     throw new Error('VitePress 构建失败：dist/index.html 不存在')
   }
 
-  console.log('\n▶ 3/5 Pagefind 中文全文索引')
+  console.log('\n▶ 3/6 Pagefind 中文全文索引')
   const pagefindBin = path.join(ROOT, 'node_modules/pagefind/lib/runner/bin.cjs')
   execFileSync(
     node,
@@ -72,11 +72,35 @@ async function main() {
     { cwd: ROOT, stdio: 'inherit', env }
   )
 
-  console.log('\n▶ 4/5 生成 Service Worker（Workbox getManifest + esbuild 打包）')
+  console.log('\n▶ 4/6 复制站内附件（raw/attachments → dist/attachments）')
+  const ATT_SRC = path.join(ROOT, 'raw', 'attachments')
+  const ATT_DEST = path.join(DIST, 'attachments')
+  if (!fs.existsSync(path.join(ATT_SRC, 'download-manifest.json'))) {
+    throw new Error('缺少 raw/attachments，请先运行 node scripts/fetch-attachments.mjs（需本机登录语雀）')
+  }
+  fs.rmSync(ATT_DEST, { recursive: true, force: true })
+  fs.cpSync(ATT_SRC, ATT_DEST, {
+    recursive: true,
+    filter: (src) => !src.endsWith('download-manifest.json'),
+  })
+  const dl = JSON.parse(fs.readFileSync(path.join(ATT_SRC, 'download-manifest.json'), 'utf8'))
+  const byYear = {}
+  for (const f of dl.files) {
+    ;(byYear[f.year] ||= []).push({ name: f.name, size: f.size })
+  }
+  fs.writeFileSync(
+    path.join(ATT_DEST, 'manifest.json'),
+    JSON.stringify({ generatedAt: new Date().toISOString(), totalBytes: dl.totalBytes, years: byYear }, null, 2),
+    'utf8'
+  )
+  console.log(`  已复制 ${dl.files.length} 个附件，共 ${human(dl.totalBytes)}`)
+  fs.writeFileSync(path.join(DIST, '.nojekyll'), '')
+
+  console.log('\n▶ 5/6 生成 Service Worker（Workbox getManifest + esbuild 打包）')
   const { manifestEntries, warnings, size } = await getManifest({
     globDirectory: DIST,
     globPatterns: ['**/*'],
-    globIgnores: ['sw.js', '**/*.map'],
+    globIgnores: ['sw.js', '**/*.map', 'attachments/**'],
     maximumFileSizeToCacheInBytes: 12 * 1024 * 1024,
   })
   for (const warning of warnings) console.warn(`  ! ${warning}`)
@@ -101,7 +125,7 @@ async function main() {
   })
   console.log(`  预缓存 ${manifestEntries.length} 个文件，共 ${human(size)}`)
 
-  console.log('\n▶ 5/5 产物自检')
+  console.log('\n▶ 6/6 产物自检')
   const required = [
     'index.html',
     'manifest.webmanifest',
@@ -118,6 +142,11 @@ async function main() {
     'english-1/2010.html',
     'english-1/2025.html',
     'attachments.html',
+    'reader.html',
+    'attachments/2010/2010_text1_做题模式.html',
+    'attachments/2025/2025_text4_复盘模式.html',
+    'attachments/manifest.json',
+    '.nojekyll',
   ]
   const missing = required.filter((f) => !fs.existsSync(path.join(DIST, f)))
   if (missing.length) throw new Error(`构建产物缺失：${missing.join(', ')}`)
@@ -130,9 +159,12 @@ async function main() {
     throw new Error('Service Worker 预缓存清单似乎不完整（缺少 pagefind 或 offline.html）')
   }
 
-  console.log(`  页面：${htmlCount} 个 HTML`)
+  console.log(`  页面：${htmlCount} 个 HTML（含 ${dl.files.length} 个资料原件）`)
   console.log(`  产物体积：${human(dirSize(DIST))}`)
   console.log(`  Service Worker：${human(fs.statSync(path.join(DIST, 'sw.js')).size)}`)
+  if (sw.includes('attachments/2010/')) {
+    throw new Error('Service Worker 不应预缓存 attachments（体积过大），已中止')
+  }
   console.log(`\n✓ 构建完成，用时 ${((Date.now() - started) / 1000).toFixed(1)}s`)
   console.log(`  产物目录：${DIST}`)
 }

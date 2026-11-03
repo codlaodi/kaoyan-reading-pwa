@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useData } from 'vitepress'
+import { useData, useRoute } from 'vitepress'
 import { FONT_STEPS, fontScale, searchOpen, setFontScale } from '../store'
 
 const { isDark } = useData()
+const route = useRoute()
 const index = computed(() => FONT_STEPS.indexOf(fontScale.value))
+const hidden = computed(() => /\/reader\.html$/.test(route.path))
 
 function step(delta: number) {
   const next = Math.min(FONT_STEPS.length - 1, Math.max(0, index.value + delta))
@@ -26,7 +28,7 @@ function toTop() {
 </script>
 
 <template>
-  <nav class="mobile-dock" aria-label="快捷操作">
+  <nav v-if="!hidden" class="mobile-dock" aria-label="快捷操作">
     <button type="button" class="mobile-dock__btn" @click="searchOpen = true">
       <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
         <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8" />

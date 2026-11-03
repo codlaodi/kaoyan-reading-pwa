@@ -160,6 +160,9 @@ async function main() {
     console.log(`本地服务：${site}（BASE_PATH=${BASE}）`)
   }
 
+  const readerFile = '/attachments/2010/2010_text1_做题模式.html'
+  const readerUrl = `${site}reader.html?year=2010&f=${encodeURIComponent(readerFile)}`
+
   const chromePath = findChrome()
   const debugPort = 9333
   const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'kaoyan-pwa-'))
@@ -328,6 +331,39 @@ async function main() {
     const homeShot = await cdp.send('Page.captureScreenshot', { format: 'png' })
     fs.writeFileSync(path.join(ARTIFACTS, 'home-mobile.png'), Buffer.from(homeShot.data, 'base64'))
 
+    // 3. 在线站内打开一份附件（免登录），并确认写入离线缓存
+    console.log('在线打开附件…')
+    await cdp.send('Page.navigate', { url: readerUrl })
+    await waitForLoad()
+    let readerState = { ok: false, title: '', len: 0 }
+    try {
+      await waitUntil(
+        async () => {
+          readerState = await evaluate(`(() => {
+            const f = document.querySelector('.reader__frame');
+            if (!f || !f.contentDocument) return { ok: false, title: '', len: 0 };
+            const d = f.contentDocument;
+            return { ok: true, title: d.title || '', len: (d.body && d.body.innerText || '').length };
+          })()`)
+          return readerState.ok && readerState.len > 50
+        },
+        45000,
+        '附件 iframe 加载'
+      )
+    } catch {
+      /* 保留状态 */
+    }
+    check(
+      '站内打开附件（免登录）',
+      readerState.ok && readerState.len > 50,
+      `title=${readerState.title} text=${readerState.len}`
+    )
+    const attCached = await evaluate(
+      `caches.open('kaoyan-local-attachments').then((c) => c.keys().then((k) => k.length))`,
+      { awaitPromise: true }
+    )
+    check('附件写入离线缓存', attCached > 0, `缓存 ${attCached} 份`)
+
     // 3. 关闭本地服务器（真正断网）+ DevTools 离线模拟
     if (server) {
       await new Promise((resolve) => server.close(resolve))
@@ -361,7 +397,7 @@ async function main() {
       !navError &&
       yearInfo.title.includes('2010') &&
       yearInfo.text.includes('资料清单') &&
-      yearInfo.text.includes('需登录') &&
+      yearInfo.text.includes('已收录') &&
       yearInfo.url === `${BASE}english-1/2010.html`
     check(
       '断网打开年份页 /english-1/2010.html',
@@ -369,14 +405,34 @@ async function main() {
       yearOk ? `title=${yearInfo.title}` : `navError=${navError || '无'} title=${yearInfo.title}`
     )
 
-    // 年份页里的附件链接仍指向语雀原始地址
+    // 年份页：附件链接指向站内阅读器，来源标注仍保留语雀原链
     const attHref = await evaluate(
       `(document.querySelector('.att-link') || {}).href || ''`
     )
     check(
-      '附件链接保留原始来源',
-      /^https:\/\/www\.yuque\.com\/attachments\//.test(attHref),
-      attHref.slice(0, 80)
+      '附件链接指向站内阅读器',
+      /\/reader\.html\?year=2010&f=%2Fattachments%2F/.test(attHref),
+      attHref.slice(0, 100)
+    )
+    const sourceHref = await evaluate(
+      `(document.querySelector('.source-meta a') || {}).href || ''`
+    )
+    check(
+      '来源标注保留语雀原链',
+      /^https:\/\/www\.yuque\.com\/nanxiao_fighters\/afkiny\//.test(sourceHref),
+      sourceHref.slice(0, 80)
+    )
+
+    // 年份页「整年离线缓存」组件
+    await sleep(600)
+    const yearDownload = await evaluate(`(() => {
+      const el = document.querySelector('.year-download');
+      return { exists: !!el, text: el ? el.innerText : '' };
+    })()`)
+    check(
+      '年份页提供整年离线缓存',
+      yearDownload.exists && yearDownload.text.includes('本年 8 份资料'),
+      yearDownload.text.replace(/\\n/g, ' ').slice(0, 90)
     )
 
     // 2.5 字号 / 深色 / 阅读进度（页面级功能）
@@ -423,6 +479,33 @@ async function main() {
     )
     check('阅读进度写入 localStorage', progressSaved > 0, `条目=${progressSaved}`)
 
+    // 4.5 断网重开刚才看过的附件（应命中缓存）
+    await cdp.send('Page.navigate', { url: readerUrl })
+    await waitForLoad()
+    let offlineReader = { ok: false, len: 0 }
+    try {
+      await waitUntil(
+        async () => {
+          offlineReader = await evaluate(`(() => {
+            const f = document.querySelector('.reader__frame');
+            if (!f || !f.contentDocument) return { ok: false, len: 0 };
+            return { ok: true, len: (f.contentDocument.body && f.contentDocument.body.innerText || '').length };
+          })()`)
+          return offlineReader.ok && offlineReader.len > 50
+        },
+        30000,
+        '离线附件加载'
+      )
+    } catch {
+      /* 保留状态 */
+    }
+    const cacheBadge = await evaluate(`!!document.querySelector('.reader__cache')`)
+    check(
+      '断网重开附件（缓存命中）',
+      offlineReader.ok && offlineReader.len > 50 && cacheBadge,
+      `text=${offlineReader.len} cachedBadge=${cacheBadge}`
+    )
+
     // 5. 断网打开附件清单
     await cdp.send('Page.navigate', { url: `${site}attachments.html` })
     await waitForLoad()
@@ -430,7 +513,7 @@ async function main() {
     const attRows = await evaluate(`document.querySelectorAll('.vp-doc table tbody tr').length`)
     check(
       '断网打开附件清单',
-      attText.includes('附件清单与登录限制') && attRows >= 128,
+      attText.includes('附件清单（站内阅读）') && attRows >= 128,
       `表格行数=${attRows}`
     )
 

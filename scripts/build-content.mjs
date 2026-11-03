@@ -94,10 +94,12 @@ function groupAttachments(doc) {
 
 const attachmentCell = (att) => {
   if (!att) return '—';
+  const file = `/attachments/${att.year}/${att.name}`;
+  const href = `../reader.html?year=${att.year}&amp;f=${encodeURIComponent(file)}`;
   return (
-    `<a class="att-link" href="${att.url}" target="_blank" rel="noopener noreferrer">` +
+    `<a class="att-link" href="${href}" data-att-file="${file}" data-att-size="${att.size || 0}">` +
     `${escapeMd(att.label || att.name)}</a><br>` +
-    `<span class="att-meta">${fmtSize(att.size)} · ${badgeLogin}</span>`
+    `<span class="att-meta">${fmtSize(att.size)} · ${badgePublic}</span>`
   );
 };
 
@@ -132,22 +134,24 @@ outline: [2, 3]
     <span>原文更新</span><time>${updated}</time>
     <span>抓取时间</span><time>${manifest.source.fetchedAt.slice(0, 10)}</time>
     <span>抓取工具</span><span>yuque-dl@1.0.87 + 语雀公开 API</span>
-    <span>本年附件</span><span>${rows.length * 2} 个 · ${fmtSize(totalSize)}（需登录）</span>
+    <span>本年附件</span><span>${rows.length * 2} 个 · ${fmtSize(totalSize)}（已收录）</span>
   </div>
 </div>
 
-::: warning 关于附件
-本年正文并非直接写在语雀页面里，而是 **8 个独立 HTML 资料**（Text 1–4 × 做题/复盘），
-存放在语雀附件中。语雀要求**登录后**才能下载附件，因此这些 HTML 的正文没有随本站分发。
-下方清单保留了文件名、大小与原始链接；登录语雀后可直接打开。详见 [附件清单与说明](/attachments.html)。
+::: tip 站内阅读
+本年 **${rows.length * 2} 份 HTML 原件已收录**，本站访问者**无需登录**即可打开。
+文件较大（合计约 ${fmtSize(totalSize)}），首次打开需等待加载；读过的文件会自动缓存，断网后可再次打开。
+也可以点下方「缓存本年资料」一次性保存到本机。
 :::
 
 ## 资料清单（Text 1–4）
 
 ${table}
 
+<YearDownload />
+
 > 提示：做题模式用于限时训练，复盘模式用于精读与错题分析；两者一一对应。
-> 所有链接均指向语雀原始附件，本站不转存、不修改。
+> 点击文件名在站内阅读器打开原件，本站不对内容做任何改写。
 
 ## 原文正文
 
@@ -195,7 +199,7 @@ ${totalAttachments} 份 HTML 资料（约 ${fmtSize(totalSize)}）。英语二�
 
 ::: tip 使用方式
 每年 4 篇阅读（Text 1–4），每篇分「做题模式」与「复盘模式」两份资料。
-建议先做题、再看复盘。资料正文在语雀附件中，**需登录语雀**方可打开；本站已缓存目录、年份页与说明文字，断网也能浏览。
+建议先做题、再看复盘。资料原件均已收录，**站内免登录打开**；首次打开按需加载，读过的会自动缓存，断网也能继续看。
 :::
 
 <div class="year-grid">
@@ -208,11 +212,11 @@ ${cards}
 | --- | --- |
 | 年份范围 | ${years[0]}–${years[years.length - 1]} |
 | 文档数 | ${years.length} |
-| 附件数 | ${totalAttachments}（全部需登录） |
+| 附件数 | ${totalAttachments}（全部已收录） |
 | 附件总体积 | ${fmtSize(totalSize)} |
 | 图片 | 0（原文正文无图片） |
 
-具体附件与原始链接见 [附件清单](/attachments.html)。
+具体附件见 [附件清单](/attachments.html)。
 `;
 }
 
@@ -239,14 +243,14 @@ hero:
 
 features:
   - icon: 📚
-    title: 16 年真题资料
-    details: 2010–2025 英语一，每年 Text 1–4 的做题与复盘模式，按目录组织。
+    title: 128 份资料站内读
+    details: 2010–2025 英语一，每年 Text 1–4 的做题与复盘 HTML 原件，免登录直接打开。
   - icon: 🔍
     title: Pagefind 本地全文搜索
     details: 索引在构建时生成，随站点离线可用，中文分词检索。
   - icon: 📴
     title: 断网可读
-    details: Service Worker 预缓存页面、脚本、字体与搜索索引，离线打开已缓存内容。
+    details: 页面、脚本、字体与搜索索引预缓存；资料原件读过即缓存，也可整年下载。
   - icon: 🌙
     title: 深色模式与字号
     details: 一键切换深色，A-/A+ 调节正文字号，偏好保存在本机。
@@ -254,8 +258,8 @@ features:
     title: 阅读进度记忆
     details: 自动记住每篇读到哪里，首页可一键继续上次阅读。
   - icon: 🔒
-    title: 无账号 · 无追踪
-    details: 不需要登录，不收集数据；所有偏好只存在浏览器本地。
+    title: 访问免登录
+    details: 访客不需要语雀账号；偏好只存在浏览器本地，无统计、无追踪。
 ---
 
 <ContinueReading />
@@ -264,7 +268,9 @@ features:
 
 **范围说明**：本站只收录《考研阅读大观》的**英语一**部分（2010–2025）。英语二未收录。
 
-**内容边界**：公开可抓取的是目录、标题与资料清单；128 份 HTML 资料正文位于语雀附件，需登录才能下载，因此本站不包含其正文。详见 [附件说明](/attachments.html)。
+**资料说明**：128 份 HTML 原件（约 393 MB）已由维护者下载并托管，**访问者无需登录**。
+首次打开某个文件时按需加载，读过即缓存；也可在年份页点「缓存本年资料」一次性保存（每年约 24 MB）。
+详见 [附件清单](/attachments.html)。
 
 </div>
 `;
@@ -287,12 +293,21 @@ description: 在安卓手机上把本站添加到主屏幕、离线阅读、搜�
 
 > 若菜单里没有「安装」，请确认：地址是 HTTPS、没有使用无痕模式、且已刷新过一次页面。
 
+## 站内阅读资料
+
+- 进入任一年份页 → 点「做题模式 / 复盘模式」文件名。
+- 打开的是**资料原件**（独立 HTML），阅读器顶部有「← 返回」和「原始文件」。
+- **不需要语雀账号**，本站已托管原件。
+- 第一次打开需要联网（单个文件 0.8–8.3 MB）；打开后会自动进入缓存，断网再开同一份仍可读。
+- 想提前离线：在年份页点「缓存本年资料（约 24 MB）」，等进度完成即可。
+
 ## 离线阅读
 
 - 预缓存范围：所有页面、脚本、样式、字体、图标、Pagefind 搜索索引。
-- 安装后首次访问会把站点内容写入浏览器缓存；之后**断网**打开，目录、年份页、使用说明与搜索结果均可正常使用。
+- 安装后首次访问会把站点外壳写入缓存；之后**断网**打开，目录、年份页、使用说明与搜索结果均可正常使用。
+- 资料原件（128 个 HTML，共约 393 MB）**不在**初始预缓存内，避免安装时占用过大空间：
+  读过的单份会自动缓存，也可在年份页整年下载。
 - 想确认是否已缓存：断网后从桌面图标打开，能进入首页即成功。
-- 附件（语雀 HTML）**不在**离线缓存内，需要登录语雀在线打开。
 
 ## 全文搜索
 
@@ -309,8 +324,11 @@ description: 在安卓手机上把本站添加到主屏幕、离线阅读、搜�
 
 ## 常见问题
 
-**Q：为什么年份页只有资料清单，没有文章正文？**
-A：原知识库的正文放在语雀附件（HTML）里，语雀要求登录才能下载。本站不登录、不抓取受保护内容，只保留公开的目录与清单。
+**Q：打开资料要登录语雀吗？**
+A：不需要。128 份 HTML 原件已经下载并托管在本站，访问者直接点开即可。
+
+**Q：为什么第一次打开资料要等？**
+A：单个文件 0.8–8.3 MB，首次需要下载；下载后会进缓存，之后离线也能打开。年份页可整年缓存。
 
 **Q：需要注册或登录本站吗？**
 A：不需要。本站是纯静态站点，没有后端、没有账号体系，也不会上传任何数据。
@@ -334,23 +352,23 @@ description: 数据来源、版权、隐私与技术实现说明。
 | --- | --- |
 | 原始知识库 | [${manifest.source.name}](${manifest.source.url}) |
 | 作者空间 | 语雀 · nanxiao_fighters |
-| 收录范围 | **英语一** 2010–2025（${years.length} 篇文档 / ${manifest.attachments.total} 个附件） |
+| 收录范围 | **英语一** 2010–2025（${years.length} 篇文档 / ${manifest.attachments.total} 个 HTML 附件，约 393 MB） |
 | 抓取时间 | ${manifest.source.fetchedAt.slice(0, 10)} |
-| 抓取方式 | 匿名访问公开页面与公开 JSON 接口；正文 Markdown 由 [yuque-dl](https://github.com/gxr404/yuque-dl) 生成 |
-| 登录状态 | 全程未登录，未使用任何 Cookie / Token / 密钥 |
+| 抓取方式 | 元数据走匿名公开接口，正文 Markdown 由 [yuque-dl](https://github.com/gxr404/yuque-dl) 生成；128 份附件由维护者**本人在语雀登录后**下载 |
+| 登录状态 | **站点访问者无需登录**；下载附件时使用维护者本人会话，密码只输入在浏览器中，未保存、未上传 |
 
 ## 版权与使用边界
 
 - 原文、真题与解析的版权归原作者及权利人所有；本站仅做**个人离线阅读与检索**的技术整理。
-- 页面中的原文链接、附件链接均指向语雀原始地址，未做改写；未转存受登录保护的附件正文。
-- 若权利人认为不妥，删除对应静态文件即可移除，无需改动其他内容。
+- 128 份附件 HTML **未做任何改写**，按原文件名托管；页面同时保留语雀原始链接作为来源标注。
+- 为避免被搜索引擎扩散，全站已设置 \`noindex\`；但任何拿到网址的人仍可访问，请勿公开传播。
+- 若权利人认为不妥，删除 \`attachments/\` 下对应文件即可移除，无需改动其他内容。
 
 ## 内容完整性说明
 
-公开页面中，年份文档本身**只有附件卡片**，没有正文文字，也没有图片。
-附件共 128 个 HTML（每年 4 篇 × 做题/复盘），语雀对匿名访问统一返回 302 跳转登录页，
-因此本站只能提供：目录结构、标题、附件名、大小、原始链接、更新时间。
-这不是抓取失败，而是语雀的访问控制；本项目选择尊重该限制。
+- 年份文档正文只有附件卡片（无正文文字、无图片）。
+- 128 个 HTML（每年 4 篇 × 做题/复盘）已全部收录，访问者**免登录**在站内阅读器打开。
+- 附件共约 393 MB，为避免安装时占用过大空间，采用**按需缓存**：读过即缓存，年份页可整年下载。
 
 ## 隐私
 
@@ -372,9 +390,12 @@ function attachmentsPage() {
   for (const year of years) {
     const doc = yearDocs.get(year);
     for (const att of doc.attachments || []) {
+      const file = `/attachments/${year}/${att.name}`;
+      const href = `reader.html?year=${year}&amp;f=${encodeURIComponent(file)}`;
       rows.push(
         `| ${year} | Text ${att.text ?? '—'} | ${att.mode} | ${fmtSize(att.size)} | ` +
-          `<a href="${att.url}" target="_blank" rel="noopener noreferrer">${escapeMd(att.name)}</a> | ${badgeLogin} |`
+          `<a href="${href}" data-att-file="${file}">站内打开</a> | ` +
+          `<a href="${att.url}" target="_blank" rel="noopener noreferrer">原始链接</a> |`
       );
     }
   }
@@ -385,26 +406,26 @@ function attachmentsPage() {
     .reduce((s, a) => s + (a.size || 0), 0);
 
   return `---
-title: 附件清单与登录限制
-description: 英语一 128 个 HTML 附件的完整清单、大小、原始链接，以及语雀登录限制说明。
+title: 附件清单（站内阅读）
+description: 英语一 128 个 HTML 附件清单，全部已收录，可在站内免登录打开并离线缓存。
 ---
 
-# 附件清单与登录限制
+# 附件清单（站内阅读）
 
-## 结论
+## 说明
 
 - 英语一共有 **${manifest.attachments.total} 个 HTML 附件**（2010–2025 × 4 篇 × 做题/复盘），总体积约 **${fmtSize(totalSize)}**。
-- 匿名访问这些附件时，语雀返回 **HTTP ${sample.status || 302} → \`${sample.location || '/login'}\`**，即**必须登录**才能下载或查看。
-- 本项目**不登录、不索取账号或密钥**，因此站内不包含附件正文；以下清单保留全部可公开获取的元数据与原始链接。
-- 附件正文的版权归原作者所有；登录语雀后可在原文页面直接打开。
+- 这些原件已由维护者**本人在语雀登录后**下载并托管，**访问本站无需登录**，点「站内打开」即可阅读。
+- 原件未做任何改写；「原始链接」仍指向语雀，匿名访问时需登录（${sample.status || 302} → \`${sample.location || '/login'}\`）。
+- 附件体积较大：首次打开按需下载，读过即缓存；年份页可「缓存本年资料」整年保存。
 
 ## 清单（共 ${manifest.attachments.total} 条）
 
-| 年份 | 篇目 | 模式 | 大小 | 原始附件链接 | 访问 |
+| 年份 | 篇目 | 模式 | 大小 | 站内阅读 | 原始语雀 |
 | --- | --- | --- | --- | --- | --- |
 ${rows.join('\n')}
 
-## 抽样验证记录
+## 原始语雀的可访问性（历史探测）
 
 | 附件 | HTTP 状态 | 跳转 | 判定 |
 | --- | --- | --- | --- |
@@ -418,6 +439,21 @@ ${access.sample
   .join('\n')}
 
 > 验证时间：${manifest.source.fetchedAt.slice(0, 10)}；方法：匿名 GET，禁止自动跟随跳转。
+> 该结果说明语雀原站对匿名访客加登录墙；本站的免登录阅读依赖已下载的副本。
+`;
+}
+
+function readerPage() {
+  return `---
+layout: false
+title: 资料阅读
+description: 站内阅读语雀资料原件
+sidebar: false
+aside: false
+outline: false
+---
+
+<AttachmentReader />
 `;
 }
 
@@ -451,7 +487,7 @@ function write(file, content) {
 
 fs.mkdirSync(CONTENT, { recursive: true });
 // 只清理生成物，保留 content/public（PWA 图标、manifest、logo）
-for (const file of ['index.md', 'guide.md', 'about.md', 'attachments.md', 'offline.md']) {
+for (const file of ['index.md', 'guide.md', 'about.md', 'attachments.md', 'offline.md', 'reader.md']) {
   fs.rmSync(path.join(CONTENT, file), { force: true });
 }
 fs.rmSync(path.join(CONTENT, 'english-1'), { recursive: true, force: true });
@@ -468,6 +504,7 @@ write('guide.md', guidePage());
 write('about.md', aboutPage());
 write('attachments.md', attachmentsPage());
 write('offline.md', offlinePage());
+write('reader.md', readerPage());
 
 // 附件机器可读清单（Excel 可直接打开；BOM 保证中文不乱码）
 const csvRows = ['年份,篇目,模式,文件名,大小(字节),原始链接,访问状态'];
