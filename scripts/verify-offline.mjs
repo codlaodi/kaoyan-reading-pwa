@@ -26,7 +26,14 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
 const DIST = path.join(ROOT, '.vitepress', 'dist')
 const ARTIFACTS = path.join(ROOT, 'artifacts')
-const BASE = (process.env.BASE_PATH || '/').replace(/\/?$/, '/')
+const BASE = (
+  (process.env.VERIFY_URL || '').replace(/\/?$/, '/') || process.env.BASE_PATH || '/'
+).startsWith('http')
+  ? new URL(process.env.VERIFY_URL).pathname
+  : (process.env.BASE_PATH || '/').replace(/\/?$/, '/')
+const LIVE_URL = process.env.VERIFY_URL
+  ? process.env.VERIFY_URL.replace(/\/?$/, '/')
+  : ''
 
 const CHROME_CANDIDATES = [
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
@@ -120,7 +127,7 @@ async function waitForPageTarget(port, timeout = 25000) {
   while (Date.now() - started < timeout) {
     try {
       const list = await fetchJson(`http://127.0.0.1:${port}/json/list`)
-      const page = list.find((t) => t.type === 'page' && /127\.0\.0\.1/.test(t.url))
+      const page = list.find((t) => t.type === 'page' && /^https?:/.test(t.url))
       if (page) return page
     } catch {
       /* retry */
@@ -142,10 +149,16 @@ async function main() {
     console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ` — ${detail}` : ''}`)
   }
 
-  const { server, port } = await startServer({ root: DIST, base: BASE, port: 4173 })
-  const origin = `http://127.0.0.1:${port}`
-  const site = `${origin}${BASE}`
-  console.log(`本地服务：${site}（BASE_PATH=${BASE}）`)
+  let server = null
+  let site = LIVE_URL
+  if (LIVE_URL) {
+    console.log(`线上验收：${site}（base=${BASE}）`)
+  } else {
+    const started = await startServer({ root: DIST, base: BASE, port: 4173 })
+    server = started.server
+    site = `http://127.0.0.1:${started.port}${BASE}`
+    console.log(`本地服务：${site}（BASE_PATH=${BASE}）`)
+  }
 
   const chromePath = findChrome()
   const debugPort = 9333
@@ -226,20 +239,43 @@ async function main() {
 
     await waitForLoad()
 
-    // 1. manifest
-    try {
-      const manifest = await cdp.send('Page.getAppManifest')
-      const errors = manifest.errors || []
-      check(
-        'PWA manifest 可解析',
-        errors.length === 0 && !!manifest.url,
-        `url=${manifest.url}${errors.length ? ` errors=${JSON.stringify(errors)}` : ''}`
-      )
-    } catch (err) {
-      check('PWA manifest 可解析', false, err.message)
+    // 1. manifest（慢网络下 Chrome 可能尚未解析，轮询等待）
+    let manifest = { url: '', errors: [] }
+    for (let i = 0; i < 20; i++) {
+      try {
+        manifest = await cdp.send('Page.getAppManifest')
+      } catch (err) {
+        manifest = { url: '', errors: [{ message: err.message }] }
+      }
+      if (manifest.url && (manifest.errors || []).length === 0) break
+      await sleep(500)
     }
+    check(
+      'PWA manifest 可解析',
+      (manifest.errors || []).length === 0 && !!manifest.url,
+      `url=${manifest.url}${
+        (manifest.errors || []).length ? ` errors=${JSON.stringify(manifest.errors)}` : ''
+      }`
+    )
 
-    // 1.5 Chrome 安装性（PWA 条件：manifest + SW + 图标）
+    // 2. SW 激活 + 接管
+    let controlled = false
+    try {
+      controlled = await waitUntil(
+        async () => await evaluate('!!navigator.serviceWorker.controller'),
+        90000,
+        'SW 接管页面'
+      )
+    } catch {
+      controlled = false
+    }
+    let swState = controlled
+      ? await evaluate('navigator.serviceWorker.controller.state')
+      : 'none'
+    check('Service Worker 激活', swState === 'activated', `state=${swState}`)
+    check('Service Worker 接管当前页面', controlled)
+
+    // Chrome 安装性（放在 SW 接管之后，避免误报 no-service-worker）
     try {
       const installability = await cdp.send('Page.getInstallabilityErrors')
       const errors = installability.installabilityErrors || []
@@ -252,54 +288,36 @@ async function main() {
       check('Chrome 可安装性检查', true, `CDP 不支持，跳过：${err.message}`)
     }
 
-    // 2. SW 注册 + 接管（ready 可能先返回 activating，轮询到 activated）
-    let swState = ''
+    // 等待 Service Worker 预缓存全部完成（线上网络慢，必须显式等待）
+    let cacheTotal = 0
+    console.log('等待 Service Worker 预缓存完成…')
     try {
       await waitUntil(
         async () => {
-          swState = await evaluate(
-            'navigator.serviceWorker.ready.then((r) => (r.active ? r.active.state : "none"))',
+          cacheTotal = await evaluate(
+            `(async () => {
+              const names = await caches.keys();
+              let total = 0;
+              for (const name of names) {
+                const cache = await caches.open(name);
+                total += (await cache.keys()).length;
+              }
+              return total;
+            })()`,
             { awaitPromise: true }
           )
-          return swState === 'activated'
+          return cacheTotal >= 130
         },
-        25000,
-        'Service Worker 激活'
+        180000,
+        '预缓存完成'
       )
     } catch {
-      /* 保留最后的 swState 供断言 */
+      console.log(`  ! 预缓存未完成，当前 ${cacheTotal} 项`)
     }
-    check('Service Worker 激活', swState === 'activated', `state=${swState}`)
-
-    let controlled = false
-    try {
-      controlled = await waitUntil(
-        async () => await evaluate('!!navigator.serviceWorker.controller'),
-        25000,
-        'SW 接管页面'
-      )
-    } catch {
-      controlled = false
+    check('预缓存已写入 Cache Storage', cacheTotal >= 130, `缓存 ${cacheTotal} 个请求`)
+    if (cacheTotal < 130) {
+      throw new Error(`预缓存未完成（${cacheTotal}/131），请重新运行验收`)
     }
-    check('Service Worker 接管当前页面', controlled)
-
-    const cachedCount = await evaluate(
-      `(async () => {
-        const names = await caches.keys();
-        let total = 0;
-        for (const name of names) {
-          const cache = await caches.open(name);
-          total += (await cache.keys()).length;
-        }
-        return { caches: names, total };
-      })()`,
-      { awaitPromise: true }
-    )
-    check(
-      '预缓存已写入 Cache Storage',
-      cachedCount.total > 100,
-      `缓存 ${cachedCount.total} 个请求`
-    )
 
     // 首页内容
     const homeText = await evaluate('document.body.innerText')
@@ -311,8 +329,12 @@ async function main() {
     fs.writeFileSync(path.join(ARTIFACTS, 'home-mobile.png'), Buffer.from(homeShot.data, 'base64'))
 
     // 3. 关闭本地服务器（真正断网）+ DevTools 离线模拟
-    await new Promise((resolve) => server.close(resolve))
-    console.log('已停止本地服务器：后续导航只能由 Service Worker 提供')
+    if (server) {
+      await new Promise((resolve) => server.close(resolve))
+      console.log('已停止本地服务器：后续导航只能由 Service Worker 提供')
+    } else {
+      console.log('线上模式：无法关闭远端服务器，使用 DevTools 离线模拟')
+    }
     await cdp.send('Network.emulateNetworkConditions', {
       offline: true,
       latency: 0,
@@ -358,19 +380,20 @@ async function main() {
     )
 
     // 2.5 字号 / 深色 / 阅读进度（页面级功能）
-    const fontBefore = await evaluate(
-      `getComputedStyle(document.querySelector('.vp-doc')).fontSize`
-    )
+    const hasDoc = await evaluate(`!!document.querySelector('.vp-doc')`)
+    const fontBefore = hasDoc
+      ? await evaluate(`getComputedStyle(document.querySelector('.vp-doc')).fontSize`)
+      : '0px'
     await evaluate(
       `[...document.querySelectorAll('.mobile-dock__btn')].find((b) => b.innerText.includes('A+')).click()`
     )
     await sleep(300)
-    const fontAfter = await evaluate(
-      `getComputedStyle(document.querySelector('.vp-doc')).fontSize`
-    )
+    const fontAfter = hasDoc
+      ? await evaluate(`getComputedStyle(document.querySelector('.vp-doc')).fontSize`)
+      : '0px'
     check(
       '字号调节 A+ 生效',
-      parseFloat(fontAfter) > parseFloat(fontBefore),
+      hasDoc && parseFloat(fontAfter) > parseFloat(fontBefore),
       `${fontBefore} → ${fontAfter}`
     )
     await evaluate(
@@ -520,7 +543,7 @@ async function main() {
   } finally {
     cdp?.close()
     chrome.kill()
-    server.close()
+    server?.close()
     setTimeout(() => {
       try {
         fs.rmSync(userDataDir, { recursive: true, force: true })

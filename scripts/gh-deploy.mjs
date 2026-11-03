@@ -29,6 +29,7 @@ if (!TOKEN) {
 const API = 'https://api.github.com'
 const REPO = process.env.GH_REPO || 'kaoyan-reading-pwa'
 const BASE = process.env.GH_BASE || `/${REPO}/`
+const MAIN_ONLY = process.env.GH_MAIN_ONLY === '1'
 const DESCRIPTION = '《考研阅读大观》英语一（2010–2025）VitePress + Pagefind + PWA 离线阅读站'
 const COMMIT_MSG = 'feat: 考研阅读大观 英语一 PWA 离线阅读站'
 
@@ -278,11 +279,21 @@ async function main() {
     parent: mainParent,
   })
 
+  if (MAIN_ONLY) {
+    log('\n仅更新 main（GH_MAIN_ONLY=1，跳过 gh-pages / Pages）')
+    return
+  }
+
   // gh-pages 基于 main 提交，避免空父提交（GitHub API 会拒绝）
   await commitBranch('gh-pages', ghPagesFiles, { parent: mainSha })
 
   await enablePages()
   const url = await waitPages()
+
+  await raw(`/repos/${OWNER}/${REPO}`, {
+    method: 'PATCH',
+    body: { homepage: url, description: DESCRIPTION },
+  }).catch(() => {})
 
   log('\n========================================')
   log(`✓ 部署完成：${url}`)

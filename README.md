@@ -2,6 +2,10 @@
 
 把语雀公开知识库 [《考研阅读大观》](https://www.yuque.com/nanxiao_fighters/afkiny) 的**英语一**部分，做成可安装到安卓主屏幕、断网可读的静态 PWA。
 
+> **在线地址（已部署）**：<https://codlaodi.github.io/kaoyan-reading-pwa/>
+> 仓库：<https://github.com/codlaodi/kaoyan-reading-pwa>
+> 手机 Chrome 打开 → ⋮ → **添加到主屏幕**，首次停留几秒等预缓存完成。
+
 - 范围：**英语一 2010–2025**，17 篇文档（1 个分区页 + 16 个年份页）；**英语二未收录**。
 - 内容：目录、标题、资料清单、来源标注、yuque-dl 抓取的原文 Markdown。
 - 附件：128 个 HTML 资料（做题 / 复盘）**需要登录语雀**才能查看正文，因此站点不包含其内容，只保留完整清单与原始链接。详见 [附件清单与登录限制](docs/ATTACHMENTS.md)。
@@ -114,23 +118,46 @@ yuque-pwa/
 
 完整说明见 [docs/PWA.md](docs/PWA.md)。
 
-## 部署
+## 部署（已上线）
 
-已提供两套免费方案：
+**当前状态**
 
-- **GitHub Pages**：仓库 Settings → Pages → Source 选 **GitHub Actions**，推送到 `main` 即自动构建发布；工作流会自动计算子路径 `BASE_PATH`。
+| 项 | 值 |
+| --- | --- |
+| 线上地址 | <https://codlaodi.github.io/kaoyan-reading-pwa/> |
+| 仓库 | <https://github.com/codlaodi/kaoyan-reading-pwa> |
+| 托管 | GitHub Pages（项目站点，`base = /kaoyan-reading-pwa/`） |
+| Pages 源 | `gh-pages` 分支（已构建的 `dist` 内容） |
+| 部署方式 | `scripts/gh-deploy.mjs` 通过 GitHub REST API 上传；**本机不需要 git** |
+
+**更新线上内容**
+
+```bash
+# 1) 重新构建（必须与仓库名一致的 base）
+BASE_PATH=/kaoyan-reading-pwa/ pnpm build
+
+# 2) 用具备 repo 权限的 token 推送 main + gh-pages
+GH_TOKEN=ghp_xxx node scripts/gh-deploy.mjs
+
+# 只更新源码 main、不动 gh-pages：
+GH_MAIN_ONLY=1 GH_TOKEN=ghp_xxx node scripts/gh-deploy.mjs
+```
+
+**其他部署方式**
+
+- **GitHub Actions**：`.github/workflows/deploy.yml` 已备好，推送 `main` 即自动构建发布；但当前授权 token 不含 `workflow` scope，因此仓库暂未包含 `.github`、Pages 仍用 `gh-pages` 分支。给 token 加 `workflow` 权限后上传该目录，并把 Pages Source 切到 **GitHub Actions** 即可。
 - **Vercel**：导入仓库即可，`vercel.json` 已配置构建命令与输出目录。
 
 逐步操作、base 说明与常见问题见 [docs/DEPLOY.md](docs/DEPLOY.md)。
-
-> 我没有你的 GitHub / Vercel 账号，无法代你完成首次授权与推送；工作流会在你 push 后自动部署。本机未安装 git，可用 Git 安装包、GitHub Desktop 或网页上传。
 
 ## 验收
 
 自动化验收 **19/19 通过**，覆盖：manifest 可解析、Chrome 可安装、SW 激活与接管、131 项预缓存、断网打开首页/年份页/附件清单、中文与数字搜索、字号、深色、阅读进度、继续阅读、未缓存页回退。
 
-- 验收方法：先 `pnpm build`，再 `pnpm verify`。脚本会**先停掉本地服务器**再断网，避免“其实还在访问 localhost”的假通过。
-- 已在 `BASE_PATH=/` 与 `BASE_PATH=/kaoyan-pwa/` 两种部署路径下各跑一遍，均 19/19。
+- **线上复测**：2026-11-03 直接对 <https://codlaodi.github.io/kaoyan-reading-pwa/> 跑同一套脚本，19/19（`artifacts/verify-offline-live.json`）。
+- **本地根路径**：19/19（`artifacts/verify-offline-local.json`）。
+- **子路径构建**：`BASE_PATH=/kaoyan-pwa/` 下 19/19（`artifacts/verify-offline-base.json`）。
+- 验收方法：`pnpm build` 后 `pnpm verify`；脚本会**先停掉本地服务器**再断网，避免“其实还在访问 localhost”的假通过。
 - 安卓手动清单见 [docs/ACCEPTANCE.md](docs/ACCEPTANCE.md)。
 
 ## 数据来源与边界

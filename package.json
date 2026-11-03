@@ -16,6 +16,7 @@
     "preview": "node scripts/serve-dist.mjs",
     "verify": "node scripts/verify-offline.mjs",
     "verify:offline": "node scripts/verify-offline.mjs",
+    "deploy:gh": "node scripts/gh-deploy.mjs",
     "icons": "python scripts/make-icons.py"
   },
   "devDependencies": {

@@ -1,11 +1,40 @@
 # 部署说明
 
-本目录已经是可构建的完整项目，但**部署需要你自己的托管账号**。我没有服务器/Git 账号，因此不会代你推送；下面是可以直接复制的步骤。
+## 0. 当前已部署（2026-11-03）
 
-两种免费方案任选其一：
+| 项 | 值 |
+| --- | --- |
+| 线上地址 | <https://codlaodi.github.io/kaoyan-reading-pwa/> |
+| 仓库 | <https://github.com/codlaodi/kaoyan-reading-pwa> |
+| Pages 源 | `gh-pages` 分支（已构建产物） |
+| base | `/kaoyan-reading-pwa/` |
 
-- **A. GitHub Pages**（推荐给“放自己仓库、自动构建”）
-- **B. Vercel**（推荐给“只想点几下、不折腾 Actions”）
+本机没有 git，实际使用 `scripts/gh-deploy.mjs` 直连 GitHub REST API 完成：
+
+```bash
+# 重新构建（base 必须等于 /<仓库名>/）
+BASE_PATH=/kaoyan-reading-pwa/ pnpm build
+
+# 上传 main（源码）+ gh-pages（构建产物），并开启/更新 Pages
+GH_TOKEN=<具备 repo 权限的 token> node scripts/gh-deploy.mjs
+
+# 只更新源码 main，不改 gh-pages
+GH_MAIN_ONLY=1 GH_TOKEN=<token> node scripts/gh-deploy.mjs
+```
+
+- `GH_TOKEN` 可用 `gh auth token` 获取；不要提交到仓库。
+- 若你的网络也有 TLS 代理，Node 可能报 `UNABLE_TO_VERIFY_LEAF_SIGNATURE`：用
+  `NODE_EXTRA_CA_CERTS=<导出的根证书.pem> node scripts/gh-deploy.mjs`，不要关闭校验。
+- 当前授权 token 的 scopes 为 `gist, read:org, repo`，**不含 workflow**，因此没有上传
+  `.github/workflows/deploy.yml`，Pages 走 `gh-pages` 分支。需要 Actions 时，给 token 加
+  `workflow` 权限后重新上传该目录，并在 Pages 设置里把 Source 切到 **GitHub Actions**。
+
+---
+
+本目录已经是可构建的完整项目。下面是通用的两种免费方案；**部署需要你自己的托管账号**。
+
+- **A. GitHub Pages**（当前使用的方式 / 或改用 Actions）
+- **B. Vercel**（导入仓库即可）
 
 两种都支持 HTTPS，PWA 安装与离线都可正常使用。
 

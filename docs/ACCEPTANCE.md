@@ -2,30 +2,39 @@
 
 ## 一、自动化验收（19/19 通过）
 
+**线上环境**：<https://codlaodi.github.io/kaoyan-reading-pwa/>（2026-11-03 复测，19/19）
+**本地根路径**：`BASE_PATH=/`（19/19）
+**子路径构建**：`BASE_PATH=/kaoyan-pwa/`（19/19）
+
 运行方式：
 
 ```bash
 pnpm build
-pnpm verify
+pnpm verify                              # 本地：会真正停掉服务器再断网
+VERIFY_URL=https://<站点>/ BASE_PATH=/<base>/ pnpm verify   # 线上：DevTools 断网模拟
 ```
 
 脚本用本机 **Chrome 156 无头模式 + CDP** 驱动，关键动作：
 
-1. 启动本地静态服务器，加载站点并等待 Service Worker 激活、接管、写入缓存；
-2. **停止本地服务器**（不是只勾 DevTools Offline，避免“其实还在访问 localhost”的假通过）；
-3. 再开启 DevTools 离线模拟，逐页导航并断言；
-4. 截图存档到 `artifacts/`。
+1. 加载站点，等待 Service Worker **激活并接管**，再等待 Cache Storage 达到 **131 项**（线上慢网络下必须显式等待，否则会误判）；
+2. 本地模式：**停止本地服务器**（不是只勾 DevTools Offline，避免“其实还在访问 localhost”的假通过）；
+   线上模式：使用 DevTools 离线模拟（无法关闭远端服务器）；
+3. 逐页导航、搜索、交互并断言；
+4. 截图与 JSON 存档到 `artifacts/`：
+   - `verify-offline-live.json`（线上）
+   - `verify-offline-local.json`（本地）
+   - `verify-offline-base.json`（子路径）
 
 | # | 检查项 | 结果 | 说明 |
 | --- | --- | --- | --- |
-| 1 | PWA manifest 可解析 | ✅ | `manifest.webmanifest` 无错误 |
+| 1 | PWA manifest 可解析 | ✅ | `manifest.webmanifest` 无错误（线上 MIME 为 `application/manifest+json`） |
 | 2 | Chrome 可安装性检查 | ✅ | `Page.getInstallabilityErrors` 无错误 |
 | 3 | Service Worker 激活 | ✅ | `activated` |
 | 4 | Service Worker 接管页面 | ✅ | `navigator.serviceWorker.controller` 非空 |
 | 5 | 预缓存写入 Cache Storage | ✅ | 131 个请求 / 约 2.4 MB |
 | 6 | 首页渲染 | ✅ | 标题、CTA 正常 |
 | 7 | 移动端底部工具条 | ✅ | 搜索 / 字号 / 主题 / 顶部 |
-| 8 | 进入离线状态 | ✅ | `navigator.onLine === false` 且服务器已停止 |
+| 8 | 进入离线状态 | ✅ | `navigator.onLine === false`（本地模式同时已停服务器） |
 | 9 | 断网打开年份页 | ✅ | `/english-1/2010.html` 标题与正文正确 |
 | 10 | 附件链接保留原始来源 | ✅ | 指向 `www.yuque.com/attachments/...` |
 | 11 | 字号调节 A+ | ✅ | 正文 16px → 17.6px |
