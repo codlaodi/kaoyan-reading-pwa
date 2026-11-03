@@ -163,7 +163,7 @@ async function commitBranch(branch, files, { parent = null } = {}) {
   }
 
   try {
-    await raw(`/repos/${OWNER}/${REPO}/git/refs/heads/${branch}`, {
+    await raw(`/repos/${OWNER}/${REPO}/git/refs`, {
       method: 'POST',
       body: { ref: `refs/heads/${branch}`, sha: commit.sha },
     })
@@ -274,16 +274,12 @@ async function main() {
   }
   const ghPagesFiles = collectFiles(DIST)
 
-  await commitBranch(repo.default_branch || 'main', sourceFiles, { parent: mainParent })
+  const mainSha = await commitBranch(repo.default_branch || 'main', sourceFiles, {
+    parent: mainParent,
+  })
 
-  // gh-pages 独立根提交；若 API 不接受空 parent，则挂到 main 上
-  try {
-    await commitBranch('gh-pages', ghPagesFiles, { parent: null })
-  } catch (err) {
-    log('  空父提交失败，改为基于 main 创建 gh-pages')
-    const mainRef = await raw(`/repos/${OWNER}/${REPO}/git/ref/heads/${repo.default_branch}`)
-    await commitBranch('gh-pages', ghPagesFiles, { parent: mainRef.data.object.sha })
-  }
+  // gh-pages 基于 main 提交，避免空父提交（GitHub API 会拒绝）
+  await commitBranch('gh-pages', ghPagesFiles, { parent: mainSha })
 
   await enablePages()
   const url = await waitPages()
