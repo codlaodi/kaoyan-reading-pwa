@@ -1,0 +1,122 @@
+{
+  "verifiedAt": "2026-11-03T04:57:34.884Z",
+  "baseUrl": "http://127.0.0.1:4173/",
+  "passed": 19,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "PWA manifest 可解析",
+      "ok": true,
+      "detail": "url=http://127.0.0.1:4173/manifest.webmanifest",
+      "at": "2026-11-03T04:57:29.523Z"
+    },
+    {
+      "name": "Chrome 可安装性检查",
+      "ok": true,
+      "detail": "无错误",
+      "at": "2026-11-03T04:57:29.524Z"
+    },
+    {
+      "name": "Service Worker 激活",
+      "ok": true,
+      "detail": "state=activated",
+      "at": "2026-11-03T04:57:30.087Z"
+    },
+    {
+      "name": "Service Worker 接管当前页面",
+      "ok": true,
+      "detail": "",
+      "at": "2026-11-03T04:57:30.087Z"
+    },
+    {
+      "name": "预缓存已写入 Cache Storage",
+      "ok": true,
+      "detail": "缓存 131 个请求",
+      "at": "2026-11-03T04:57:30.099Z"
+    },
+    {
+      "name": "首页渲染",
+      "ok": true,
+      "detail": "",
+      "at": "2026-11-03T04:57:30.100Z"
+    },
+    {
+      "name": "移动端底部工具条存在",
+      "ok": true,
+      "detail": "",
+      "at": "2026-11-03T04:57:30.100Z"
+    },
+    {
+      "name": "浏览器进入离线状态",
+      "ok": true,
+      "detail": "navigator.onLine=false",
+      "at": "2026-11-03T04:57:30.199Z"
+    },
+    {
+      "name": "断网打开年份页 /english-1/2010.html",
+      "ok": true,
+      "detail": "title=2010 年 · 英语一 · 考研阅读大观",
+      "at": "2026-11-03T04:57:30.554Z"
+    },
+    {
+      "name": "附件链接保留原始来源",
+      "ok": true,
+      "detail": "https://www.yuque.com/attachments/yuque/0/2026/html/60574212/1792505014701-cc154",
+      "at": "2026-11-03T04:57:30.555Z"
+    },
+    {
+      "name": "字号调节 A+ 生效",
+      "ok": true,
+      "detail": "16px → 17.6px",
+      "at": "2026-11-03T04:57:30.865Z"
+    },
+    {
+      "name": "深色模式可切换",
+      "ok": true,
+      "detail": "false → true",
+      "at": "2026-11-03T04:57:31.393Z"
+    },
+    {
+      "name": "阅读进度写入 localStorage",
+      "ok": true,
+      "detail": "条目=1",
+      "at": "2026-11-03T04:57:32.825Z"
+    },
+    {
+      "name": "断网打开附件清单",
+      "ok": true,
+      "detail": "表格行数=131",
+      "at": "2026-11-03T04:57:33.151Z"
+    },
+    {
+      "name": "断网 Pagefind 中文搜索「复盘」",
+      "ok": true,
+      "detail": "命中 21 条：附件清单与登录限制 ​ / 2011 年 · 英语一 · 考研阅读大观 / 2012 年 · 英语一 · 考研阅读大观",
+      "at": "2026-11-03T04:57:33.552Z"
+    },
+    {
+      "name": "断网 Pagefind 数字搜索「2010」",
+      "ok": true,
+      "detail": "命中 6 条",
+      "at": "2026-11-03T04:57:33.552Z"
+    },
+    {
+      "name": "搜索弹窗可打开（Ctrl+K）",
+      "ok": true,
+      "detail": "",
+      "at": "2026-11-03T04:57:33.967Z"
+    },
+    {
+      "name": "首页显示「继续上次阅读」",
+      "ok": true,
+      "detail": "继续上次阅读 刚刚 2010 年 · 英语一 已读 98% 继续阅读 →",
+      "at": "2026-11-03T04:57:34.478Z"
+    },
+    {
+      "name": "未缓存页面回退到离线页",
+      "ok": true,
+      "detail": "url=http://127.0.0.1:4173/not-cached-1793681854478 title=离线 · 考研阅读大观 controlled=true text=\"这个页面还没有缓存\\n\\n当前处于离线状态，该页面不在离线缓存中。\\n回到已缓存的目录页即可继续阅读。\\n\\n回到首页\\n英语一目录\\n联网后打开本页一次，下次即可离线访问。\" caches=workbox-precache-v2-http://127.0.0.1:4173/",
+      "at": "2026-11-03T04:57:34.494Z"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "name": "kaoyan-reading-pwa",
+  "private": true,
+  "version": "1.0.0",
+  "description": "《考研阅读大观》英语一（2010–2025）的 VitePress + Pagefind + PWA 离线阅读站点",
+  "type": "module",
+  "packageManager": "pnpm@11.28.5",
+  "engines": {
+    "node": ">=18.18"
+  },
+  "scripts": {
+    "fetch": "node scripts/fetch-yuque.mjs",
+    "content": "node scripts/build-content.mjs",
+    "dev": "vitepress dev .",
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/serve-dist.mjs",
+    "verify": "node scripts/verify-offline.mjs",
+    "verify:offline": "node scripts/verify-offline.mjs",
+    "icons": "python scripts/make-icons.py"
+  },
+  "devDependencies": {
+    "esbuild": "0.21.5",
+    "pagefind": "1.6.0",
+    "vitepress": "1.6.4",
+    "workbox-build": "^7.3.0",
+    "workbox-core": "7.4.1",
+    "workbox-expiration": "7.4.1",
+    "workbox-precaching": "7.4.1",
+    "workbox-routing": "7.4.1",
+    "workbox-strategies": "7.4.1"
+  }
+}
