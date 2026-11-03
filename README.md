@@ -87,7 +87,7 @@ yuque-pwa/
 │  └─ theme/                    # 自定义 Layout、搜索、字号、进度、移动端工具条、样式
 ├─ docs/                        # 部署 / PWA / 验收 / 附件说明
 ├─ artifacts/                   # 验收截图与 JSON 报告
-├─ .github/workflows/deploy.yml # GitHub Pages 自动部署
+├─ .github/workflows/deploy.yml # 可选：Actions 自动部署（当前未启用）
 ├─ vercel.json                  # Vercel 部署配置
 └─ LICENSE                      # 代码 MIT；内容版权归原作者
 ```
