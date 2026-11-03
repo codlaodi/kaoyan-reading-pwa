@@ -14,6 +14,7 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import crypto from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -30,6 +31,9 @@ const API = 'https://api.github.com'
 const REPO = process.env.GH_REPO || 'kaoyan-reading-pwa'
 const BASE = process.env.GH_BASE || `/${REPO}/`
 const MAIN_ONLY = process.env.GH_MAIN_ONLY === '1'
+// 重试时跳过上传，直接用本地计算的 git blob SHA 复用已上传对象
+const ASSUME_BLOBS = process.env.GH_ASSUME_BLOBS === '1'
+const TREE_CHUNK = Number(process.env.GH_TREE_CHUNK || 40)
 const DESCRIPTION = '《考研阅读大观》英语一（2010–2025）VitePress + Pagefind + PWA 离线阅读站'
 const COMMIT_MSG = 'feat: 考研阅读大观 英语一 PWA 离线阅读站'
 
@@ -108,15 +112,49 @@ function collectFiles(root, { excludeGithub = false } = {}) {
   return files
 }
 
+function gitBlobSha(buf) {
+  return crypto
+    .createHash('sha1')
+    .update(`blob ${buf.length}\0`)
+    .update(buf)
+    .digest('hex')
+}
+
+async function blobExists(sha) {
+  try {
+    const res = await fetch(`${API}/repos/${OWNER}/${REPO}/git/blobs/${sha}`, {
+      method: 'HEAD',
+      headers: headers(),
+    })
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
 async function uploadBlobs(files, concurrency = 6) {
   const entries = new Array(files.length)
   let cursor = 0
   let done = 0
+  let reused = 0
   async function worker() {
     while (cursor < files.length) {
       const index = cursor++
       const file = files[index]
-      const content = fs.readFileSync(file.abs).toString('base64')
+      const buf = fs.readFileSync(file.abs)
+      const computed = gitBlobSha(buf)
+      if (ASSUME_BLOBS || (await blobExists(computed))) {
+        entries[index] = {
+          path: file.rel,
+          mode: '100644',
+          type: 'blob',
+          sha: computed,
+        }
+        reused++
+        done++
+        continue
+      }
+      const content = buf.toString('base64')
       let sha
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
@@ -133,20 +171,42 @@ async function uploadBlobs(files, concurrency = 6) {
       }
       entries[index] = { path: file.rel, mode: '100644', type: 'blob', sha }
       done++
-      if (done % 30 === 0) log(`  blobs ${done}/${files.length}`)
+      if (done % 30 === 0) log(`  blobs ${done}/${files.length}（复用 ${reused}）`)
     }
   }
   await Promise.all(Array.from({ length: concurrency }, worker))
   return entries
 }
 
+/** 分块建树：单次大 tree 请求会被 GitHub 判定超时 */
+async function createTreeInChunks(entries) {
+  let baseTree = null
+  for (let i = 0; i < entries.length; i += TREE_CHUNK) {
+    const chunk = entries.slice(i, i + TREE_CHUNK)
+    const body = baseTree ? { base_tree: baseTree, tree: chunk } : { tree: chunk }
+    let data
+    for (let attempt = 0; attempt < 4; attempt++) {
+      try {
+        data = (
+          await raw(`/repos/${OWNER}/${REPO}/git/trees`, { method: 'POST', body })
+        ).data
+        break
+      } catch (err) {
+        if (attempt === 3) throw err
+        log(`  ! tree 分块 ${i} 失败（${err.status || ''}），重试…`)
+        await sleep(4000 * (attempt + 1))
+      }
+    }
+    baseTree = data.sha
+    log(`  tree ${Math.min(i + TREE_CHUNK, entries.length)}/${entries.length}`)
+  }
+  return baseTree
+}
+
 async function commitBranch(branch, files, { parent = null } = {}) {
   log(`\n▶ 上传 ${branch}：${files.length} 个文件`)
   const treeEntries = (await uploadBlobs(files)).filter(Boolean)
-  const { data: tree } = await raw(`/repos/${OWNER}/${REPO}/git/trees`, {
-    method: 'POST',
-    body: { tree: treeEntries },
-  })
+  const treeSha = await createTreeInChunks(treeEntries)
 
   let commit
   try {
@@ -154,7 +214,7 @@ async function commitBranch(branch, files, { parent = null } = {}) {
       method: 'POST',
       body: {
         message: COMMIT_MSG,
-        tree: tree.sha,
+        tree: treeSha,
         parents: parent ? [parent] : [],
       },
     })

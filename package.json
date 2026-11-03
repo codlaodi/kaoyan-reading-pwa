@@ -17,7 +17,8 @@
     "verify": "node scripts/verify-offline.mjs",
     "verify:offline": "node scripts/verify-offline.mjs",
     "deploy:gh": "node scripts/gh-deploy.mjs",
-    "icons": "python scripts/make-icons.py"
+    "icons": "python scripts/make-icons.py",
+    "fetch:attachments": "node scripts/fetch-attachments.mjs"
   },
   "devDependencies": {
     "esbuild": "0.21.5",
