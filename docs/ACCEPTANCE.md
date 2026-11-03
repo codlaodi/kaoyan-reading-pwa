@@ -55,7 +55,7 @@ VERIFY_URL=https://<站点>/ BASE_PATH=/<base>/ pnpm verify     # 线上：DevTo
 - `artifacts/verify-offline-live.json`（线上）
 - `artifacts/verify-offline-local.json`（本地）
 - `artifacts/verify-offline-base.json`（子路径）
-- 截图：`artifacts/home-mobile.png`、`artifacts/english-1-2010-offline.png`
+- 截图：`artifacts/home-mobile.png`、`artifacts/english-1-2010-offline.png`、`artifacts/reader-mobile.png`
 
 ---
 

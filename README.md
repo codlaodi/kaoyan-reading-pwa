@@ -10,9 +10,9 @@
 - 内容：目录、标题、资料清单、来源标注、yuque-dl 抓取的原文 Markdown。
 - 附件：**128 个 HTML 原件已全部收录**（约 393 MB），站内阅读器**免登录**打开；读过的自动缓存，年份页可整年下载。原件未做任何改写。详见 [附件清单](docs/ATTACHMENTS.md) 与 [版权说明](#数据来源与边界)。
 
-| 首页（移动端） | 年份页（离线） |
-| --- | --- |
-| ![首页](artifacts/home-mobile.png) | ![年份页](artifacts/english-1-2010-offline.png) |
+| 首页（移动端） | 年份页（离线） | 站内阅读器 |
+| --- | --- | --- |
+| ![首页](artifacts/home-mobile.png) | ![年份页](artifacts/english-1-2010-offline.png) | ![阅读器](artifacts/reader-mobile.png) |
 
 ## 功能
 
